@@ -1,0 +1,8 @@
+#variables de entorno
+.env
+
+#carpeta statica
+node_modules
+
+#build folder
+dist

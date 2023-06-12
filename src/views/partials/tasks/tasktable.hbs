@@ -1,0 +1,43 @@
+{{#if tasks}}
+<table class="table table-bordered table-hover table-dark">
+    <thead>
+        <tr>
+            <th>N.</th>
+            <th>Title</th>
+            <th>description</th>
+            <th>Operations</th>
+        </tr>
+    </thead>
+
+
+<tbody>
+    {{#each tasks}}
+    <tr>
+        <td>{{@index}}</td>
+        <td>{{title}}</td>
+        <td>{{description}}</td>
+        <td>
+            {{#if done}}
+                <a href="/toggleDone/{{_id}}" class="btn btn-dark">Undone</a>
+            {{else}} 
+                <a href="/toggleDone/{{_id}}" class="btn btn-success">Done</a>
+            {{/if}}   
+            <a href="/tasks/{{_id}}/delete" class="btn btn-danger">Delete</a>
+            <a href="/tasks/{{_id}}/edit" class="btn btn-info">Update</a>
+        </td>
+    </tr>
+   
+    {{/each }}
+</tbody>
+</table>
+
+ {{else}}
+        <div class="text-center">
+            <h1>No tasks</h1>
+            <img src="/icons/images.png" alt="">
+        </div>
+
+{{/if}}
+
+
+{{!-- SI HAY TAREAS QUE APAREZCA LA TABLA, SINO EL CARTEL "NO TASKS" --}}

@@ -1,0 +1,137 @@
+npm init -y para crear package json
+
+paquetes node para funcionar instalados: npm i express express-handlebars mongoose morgan
+
+carpeta src index.js
+
+babel.js para compilar js y que sirva en todas las versiones de node y usar todas las caractersticas de javascript 
+npm i -D @babel/core @babel/cli @babel/node @babel/preset-env 
+npx babel-node src/index.js
+
+instalamos nodemon
+
+creamos .babelrc y ponemos {
+    "presets": [
+        "@babel/preset-env"
+    ]
+}
+
+importamos express y creamos app
+app.listen(3000) para el localhost
+
+en package reemplazamos script por "start": "nodemon src/index.js --exec babel-node"
+en consola vamos con npm start como comando para darle inicio al programa con babel y nodemon
+
+estructura del crud
+src con index.js, database.js y app.js(con la app)
+dentro de src las carpetas routes (index.route.js), models, views(index.hbs, about.hbs y las carpetas layouts con el archivo main.hbs y partials con footer y header)
+
+importamos routes en index.routes e importamos routes en app.js
+empleamos con app.use(indexRoutes) en app.js 
+exportamos app y la importamos en index
+
+en app.js importamos hbs y activamos el motor de plantillas
+app.set('views', path.join(__dirname, '/views')); //todo esto es para que entienda node en donde esta la carpeta views
+
+var hbs = create({ //con esto la activamos y configuramos
+    layoutsDir: path.join(app.get("views"), "layouts"),
+    defaultLayout: "main",
+    extname: ".hbs",
+})
+
+app.engine(".hbs",hbs.engine);//con esto le aclaramos a app.js que vamos a usar handlebars
+app.set('view engine', '.hbs')
+
+en index js importamos path para declarar rutas y para dejar clara la ruta de hbs y views(con los hbs)
+
+en models ponemos index.hbs, about.hbs y dentro creamos la carpeta layouts con el archiv main.hbs, que tiene {{{body}}} y en donde se reemplazan todos los hbs
+de esa manera con main le pasamos a cada ruta con cada plantilla hbs propia (about, fotter, etc) lo que queremos que tenga y comparta
+quedan todas conectadas
+
+en main incluimos elementos de partials con su propia escritura hbs {{> navbar}} {{> header}} {{> footwer}}
+
+
+creamos en src database.js e importamos mongodb
+impotamos database en index.js
+conectamos y prestamos atencion al link de conexion "mongodb://127.0.0.1:27017/crud-mongo"
+
+en models creamos un Task.js e importamos mongoose (schema, model)
+le das forma a la tarea (taskSchema) con un objeto nuevo llamado new Schema
+asi se le da forma al modelo de la tarea en MongoDB
+
+en index.hbs creamos la pagina en formato post para desde alli crear las tareas con titulo y descripcion
+agregamos la ruta task/add y el valor 'guardado'
+para que pueda recuperar el titulo y descripcion enviada, se crea un middleware de express urlencoded
+importamos task a las rutas y agregamos task a task/add
+
+luego en la ruta agregamos el save de mongodb con async await para que lo guarde en la bd
+
+
+ahora mostramos en la pagina index.hbs los elementos de la lista guardada en mongodb
+con tasks y su bucle for hecho con {{#each}} y {{title}} {{description}}
+para que figure con lista, agregamos lean() al find de route, para que aparezca como un obj js no de mongodb 
+agregamos los botones editar y borrar
+
+agregamos partials. a la carpeta partials le creamos otra carpeta llamada tasks (tasksform.hbs y tasktable.hbs)
+le llevamos la lista a table y el form a form
+luego lo importamos en index.hbs 
+{{> tasks/tasksform}}
+{{> tasks/tasktable}}
+luego a los hbs de partials le damos formato por ejemplo con tablas 
+
+cambiamos los botones a etiquetas <a> que redireccionan a paginas con funciones ejemplo /edit 
+vamos al hbs de edit y lo modificamos con un form que tenga method=POST, muy clave, asi toma la ruta con route.post y no la route.get
+a su vez vreamos una ruta que sea 
+
+para que sepa que elemento editar del arreglo de la bd, debemos darle a edit un parameto especifico con el id, quedaria edit/2 o edit/11 o edit/85
+para eso volvemos al dominio con /edit/:id, y lo buscamos con findById (de mongoose) llamamos con req.params.id en la funcion de routes con GET (que es asincrona await async) y agregamos lean() para que sea obj js no mongodb
+en el edit.hbs agregamos los values al form e input value="{{task._id}" value="{{task.title}", y dentro del textarea"{{task.description}"
+
+ahora para modificar y actualizar en el bd usamos en la funcion con POST de routes, el metodo findByIdAndUpdate(req.params.id) de mongoose y eso lo reemplaza (facil)
+luego que redireccione
+
+para delete, hay que creaar el <a> delete en el tasktable.hbs y creamos la ruta delete/:id, buscamos el req.params y con el metodo findByIdAndDelete(id) de mongoose lo eliminamos
+luego que redireccione
+
+seguimos con el boton done. cambiamos el btn por un <a> con /toggleDone (esta hecho o no esta hecho) y nombre Done
+en la ruta le asignamos una condision contraria con 
+task.done = !task.done;
+si esta hecho, queda done, sino que not done, eso en table se hace con condicionales 
+{{#if done}}, {{else}} y cerramos con {{/if}} 
+
+
+vamos a aplicar el modelo usuario controlador minuto 2:00:00 MIRAR BIEN para no cagarla
+vamos a optimizarlo 
+creamos la carpeta controllers y el archiuvo tasks.controller.js
+en ese archivo nuevo cortamos las funciones de la carpeta de rutas
+exportamos las funciones desde tasks.controller.js e importamos al de rutas
+
+cambiamos los links de las routes y table y transform y los hbs, como dice el video en minuto 2:15:00 aprox
+
+instalamos dotenv y creamos el archivo con la variable de entorno para que no se vea la base de datos en el codigo y no se pueda manipular asi nomas
+creamos el config.js y ahi le pegamos la ruta que encuentra el dotenv y le permite encontrar la ruta a la BD
+el archivo .env contiene las variables de entorno
+
+creamos el .gitignores para que no se suba a github ese archivo al subir el codigo a github
+con el comando git init abrimos un espacio en el repositorio de github y nos aparece en verde lo que se sube y en gris lo que no se sube
+
+le damos estilos con bootstrap mas de lo que ya se como se hace
+
+archivos estaticos de css e icons en la carpeta public
+
+debemos crear un script que permita compilar el codigo con babel y póder subirlo
+agregamos a la seccion "scripts" de package.json, el cogigo "build": "babel src -d dist" esto crea un nuevo directorio llamado dist
+npm run build
+crea dist y alli todo el codigo con cosas reformadas, es para que los lectores de node puedan interpretarlo
+ejecutamos con node dist/index.js
+
+tira error regeneratorbabeñ
+
+se soluciona con un plugin llamado @babel/plugin-transform-runtime que se instala en consola y se ejecuta npm run build devuelta
+como babel solo compila JS, a las capetas public y views que contienen hbs y css, hay que copiarlas de src a dist
+usamos el modulo ncp de npm para copiar el codigo
+en consola npm i ncp -D
+y para copiar vamos a scripts de package.json y a build le agregamos "&& ncp src/views dist/views && ncp src/public dist/public"
+
+
+esta lista en fase de produccion, asique agregamos a gitignores la carpeta dist
