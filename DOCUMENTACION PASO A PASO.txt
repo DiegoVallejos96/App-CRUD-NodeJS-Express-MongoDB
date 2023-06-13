@@ -135,3 +135,17 @@ y para copiar vamos a scripts de package.json y a build le agregamos "&& ncp src
 
 
 esta lista en fase de produccion, asique agregamos a gitignores la carpeta dist
+
+
+fase de despliegue en heroku (se ocupa de todo) y mongodb atlas
+en heroku lo subimos a web y mongo db lo que nos guarda el DB 
+
+primero subimos el repositorio a Github
+luego ejecutamos en consola el codigo "git remote add origin https://github.com/Punkisdead1/App-CRUD-NodeJS-Express-MongoDB.git"
+luego git push -u origin master
+con eso ya esta subiido a github
+
+nos logueamos a heroku y creamos la app
+CANCELADO
+VAMOS A USAR RAILWAY, PORQUE HEROKU SE PUSO PAY TO USE
+
